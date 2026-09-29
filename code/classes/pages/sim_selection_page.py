@@ -159,7 +159,6 @@ class SimSelectionPage(QWizardPage):
             }
             QPushButton:hover {
                 background-color: #6AB0F3;
-                transform: scale(1.05);
             }
         """
         self.fortress_button.setStyleSheet(button_style)

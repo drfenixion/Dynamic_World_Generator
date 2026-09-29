@@ -1,6 +1,11 @@
-from PyQt5.QtWidgets import QWizardPage, QHBoxLayout, QVBoxLayout, QComboBox, QListWidget, QPushButton, QLineEdit, QMessageBox, QWidget
-from PyQt5.QtCore import Qt, QEvent, QPointF
-from PyQt5.QtGui import QColor
+try:
+    from PySide.QtWidgets import QWizardPage, QHBoxLayout, QVBoxLayout, QComboBox, QListWidget, QPushButton, QLineEdit, QMessageBox, QWidget
+    from PySide.QtCore import Qt, QEvent, QPointF
+    from PySide.QtGui import QColor
+except:
+    from PySide6.QtWidgets import QWizardPage, QHBoxLayout, QVBoxLayout, QComboBox, QListWidget, QPushButton, QLineEdit, QMessageBox, QWidget
+    from PySide6.QtCore import Qt, QEvent, QPointF
+    from PySide6.QtGui import QColor
 from classes.zoomable_graphics_view import ZoomableGraphicsView
 
 class StaticObstaclesPage(QWizardPage):

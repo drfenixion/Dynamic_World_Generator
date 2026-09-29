@@ -1,7 +1,13 @@
-from PyQt5.QtWidgets import QWizard, QListWidget, QVBoxLayout, QWidget, QGraphicsScene, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsTextItem
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import Qt, QRectF, QLineF, QPointF, pyqtProperty
-from PyQt5.QtGui import QFont, QPen, QColor
+try:
+    from PySide.QtWidgets import QWizard, QListWidget, QVBoxLayout, QWidget, QGraphicsScene, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsTextItem
+    from PySide.QtWidgets import QApplication
+    from PySide.QtCore import Qt, QRectF, QLineF, QPointF
+    from PySide.QtGui import QFont, QPen, QColor
+except:
+    from PySide6.QtWidgets import QWizard, QListWidget, QVBoxLayout, QWidget, QGraphicsScene, QGraphicsRectItem, QGraphicsEllipseItem, QGraphicsLineItem, QGraphicsTextItem
+    from PySide6.QtWidgets import QApplication
+    from PySide6.QtCore import Qt, QRectF, QLineF, QPointF
+    from PySide6.QtGui import QFont, QPen, QColor
 from classes.world_manager import WorldManager
 from classes.pages.welcome_page import WelcomePage
 from classes.pages.sim_selection_page import SimSelectionPage
@@ -56,29 +62,34 @@ class DynamicWorldWizard(QWizard):
         self.nav_list.setCurrentRow(0)
         self.nav_list.itemClicked.connect(self.navigate_to_page)
 
-        # Add wizard pages
-        self.addPage(WelcomePage())
-        sim_selection_page = SimSelectionPage()
-        self.addPage(sim_selection_page)
+        # Add wizard pages.
+        # Keep a Python reference to every page: PySide6 may garbage-collect
+        # inline-created widgets, which makes QWizard crash (SIGSEGV) when it
+        # tries to lay them out on show().
+        self.welcome_page = WelcomePage()
+        self.addPage(self.welcome_page)
+        self.sim_selection_page = SimSelectionPage()
+        self.addPage(self.sim_selection_page)
         self.walls_page = WallsDesignPage(self.scene)
         self.addPage(self.walls_page)
         self.static_obstacles_page = StaticObstaclesPage(self.scene)
         self.addPage(self.static_obstacles_page)
         self.dynamic_obstacles_page = DynamicObstaclesPage(self.scene)
         self.addPage(self.dynamic_obstacles_page)
-        self.addPage(ComingSoonPage())
+        self.coming_soon_page = ComingSoonPage()
+        self.addPage(self.coming_soon_page)
 
         # Connect signals for world manager and navigation
-        sim_selection_page.simulationSelected.connect(self.initialize_world_manager)
+        self.sim_selection_page.simulationSelected.connect(self.initialize_world_manager)
         self.currentIdChanged.connect(self.update_navigation)
 
         # Setup sidebar with navigation list
-        side_widget = QWidget()
+        self.side_widget = QWidget()
         side_layout = QVBoxLayout()
         side_layout.addWidget(self.nav_list)
         side_layout.addStretch()
-        side_widget.setLayout(side_layout)
-        self.setSideWidget(side_widget)
+        self.side_widget.setLayout(side_layout)
+        self.setSideWidget(self.side_widget)
 
     def resizeEvent(self, event):
         # Adjust navigation and page layouts on window resize

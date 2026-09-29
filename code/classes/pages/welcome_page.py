@@ -1,6 +1,11 @@
-from PyQt5.QtWidgets import QWizardPage, QVBoxLayout, QLabel
-from PyQt5.QtGui import QMovie
-from PyQt5.QtCore import Qt, QSize
+try:
+    from PySide.QtWidgets import QWizardPage, QVBoxLayout, QLabel
+    from PySide.QtGui import QMovie
+    from PySide.QtCore import Qt, QSize
+except:
+    from PySide6.QtWidgets import QWizardPage, QVBoxLayout, QLabel
+    from PySide6.QtGui import QMovie
+    from PySide6.QtCore import Qt, QSize
 from utils.config import INTRO_IMAGES_DIR
 import os
 
@@ -26,11 +31,14 @@ class WelcomePage(QWizardPage):
         # Load and display GIF or fallback text
         gif_path = os.path.join(INTRO_IMAGES_DIR, "welcome.gif")
         gif_label = QLabel()
-        movie = QMovie(gif_path)
-        if movie.isValid():
-            movie.setScaledSize(QSize(1200, 750))
-            gif_label.setMovie(movie)
-            movie.start()
+        # Keep a reference to the movie: QLabel.setMovie() does not take
+        # ownership, and PySide6 would delete the C++ QMovie once the local
+        # reference goes out of scope (stopping the animation).
+        self.movie = QMovie(gif_path)
+        if self.movie.isValid():
+            self.movie.setScaledSize(QSize(1200, 750))
+            gif_label.setMovie(self.movie)
+            self.movie.start()
         else:
             gif_label.setText(f"Preview GIF not found at {gif_path}")
         gif_label.setAlignment(Qt.AlignCenter)

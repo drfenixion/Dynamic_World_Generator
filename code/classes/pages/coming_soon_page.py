@@ -1,6 +1,11 @@
-from PyQt5.QtWidgets import QWizardPage, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QMessageBox
-from PyQt5.QtGui import QFont, QPixmap
-from PyQt5.QtCore import Qt
+try:
+    from PySide.QtWidgets import QWizardPage, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QMessageBox
+    from PySide.QtGui import QFont, QPixmap
+    from PySide.QtCore import Qt
+except:
+    from PySide6.QtWidgets import QWizardPage, QVBoxLayout, QHBoxLayout, QWidget, QLabel, QMessageBox
+    from PySide6.QtGui import QFont, QPixmap
+    from PySide6.QtCore import Qt
 from utils.config import FUTURE_IMAGES_DIR
 import os
 
@@ -25,7 +30,10 @@ class ComingSoonPage(QWizardPage):
         feature1_layout = QVBoxLayout()
         feature1_label = QLabel("Gazebo Ionic")
         feature1_label.setAlignment(Qt.AlignCenter)
-        feature1_label.setFont(QFont("Arial", 18, QFont.Bold | QFont.StyleItalic))
+        feature1_font = QFont("Arial", 18)
+        feature1_font.setBold(True)
+        feature1_font.setItalic(True)
+        feature1_label.setFont(feature1_font)
         feature1_label.setStyleSheet("color: red;")
         feature1_image_label = QLabel()
         feature1_image_path = os.path.join(FUTURE_IMAGES_DIR, "ionic.png")
@@ -48,7 +56,10 @@ class ComingSoonPage(QWizardPage):
         feature2_layout = QVBoxLayout()
         feature2_label = QLabel("Isaac Sim 4.5.0")
         feature2_label.setAlignment(Qt.AlignCenter)
-        feature2_label.setFont(QFont("Arial", 18, QFont.Bold | QFont.StyleItalic))
+        feature2_font = QFont("Arial", 18)
+        feature2_font.setBold(True)
+        feature2_font.setItalic(True)
+        feature2_label.setFont(feature2_font)
         feature2_label.setStyleSheet("color: red;")
         feature2_image_label = QLabel()
         feature2_image_path = os.path.join(FUTURE_IMAGES_DIR, "isaacsim_450.png")
@@ -71,7 +82,10 @@ class ComingSoonPage(QWizardPage):
         feature3_layout = QVBoxLayout()
         feature3_label = QLabel("Isaac Sim 5.0.0")
         feature3_label.setAlignment(Qt.AlignCenter)
-        feature3_label.setFont(QFont("Arial", 18, QFont.Bold | QFont.StyleItalic))
+        feature3_font = QFont("Arial", 18)
+        feature3_font.setBold(True)
+        feature3_font.setItalic(True)
+        feature3_label.setFont(feature3_font)
         feature3_label.setStyleSheet("color: red;")
         feature3_image_label = QLabel()
         feature3_image_path = os.path.join(FUTURE_IMAGES_DIR, "isaacsim_500.png")

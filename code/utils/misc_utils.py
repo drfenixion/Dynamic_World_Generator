@@ -1,5 +1,9 @@
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtWidgets import QApplication
+try:
+    from PySide.QtWidgets import QMessageBox
+    from PySide.QtWidgets import QApplication
+except:
+    from PySide6.QtWidgets import QMessageBox
+    from PySide6.QtWidgets import QApplication
 
 
 def gazebo_not_installed_notice():

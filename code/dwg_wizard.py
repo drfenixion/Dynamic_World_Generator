@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 import sys
 from typing import Callable
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtCore import QObject, pyqtSignal
+try:
+    from PySide.QtWidgets import QApplication
+    from PySide.QtCore import QObject, Signal
+except:
+    from PySide6.QtWidgets import QApplication
+    from PySide6.QtCore import QObject, Signal
 from classes.dynamic_world_wizard import DynamicWorldWizard
 
 
@@ -26,7 +30,7 @@ from classes.dynamic_world_wizard import DynamicWorldWizard
 
 
 class dwg_wizard_close_emitter(QObject):
-    app_closed = pyqtSignal()
+    app_closed = Signal()
 
     def __init__(self, close_callback:Callable = None):
         super().__init__()
@@ -41,16 +45,21 @@ class dwg_wizard_close_emitter(QObject):
 
 def run(dwg_wizard_close_emitter: dwg_wizard_close_emitter):
     # Initialize and run the application
-    if not QApplication.instance():
+    app = QApplication.instance()
+    standalone = app is None
+    if standalone:
         app = QApplication(sys.argv)
-        wizard = DynamicWorldWizard()
-        wizard.show()
 
-        if dwg_wizard_close_emitter:
-            dwg_wizard_close_emitter.app_closed.connect(wizard.close)
+    wizard = DynamicWorldWizard()
+    wizard.show()
+
+    if dwg_wizard_close_emitter:
+        dwg_wizard_close_emitter.app_closed.connect(wizard.close)
+
+    # Only run the event loop when launched standalone; when launched from an
+    # outer app (e.g. FreeCAD) the outer event loop is already running.
+    if standalone:
         app.exec_()
-    else:
-        print('Dynamic World Wizzard window already open.')
 
 
 if __name__ == "__main__":

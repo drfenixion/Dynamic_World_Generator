@@ -1,5 +1,9 @@
-from PyQt5.QtWidgets import QGraphicsView, QLabel
-from PyQt5.QtCore import Qt, QPointF
+try:
+    from PySide.QtWidgets import QGraphicsView, QLabel
+    from PySide.QtCore import Qt, QPointF
+except:
+    from PySide6.QtWidgets import QGraphicsView, QLabel
+    from PySide6.QtCore import Qt, QPointF
 
 class ZoomableGraphicsView(QGraphicsView):
     def __init__(self, scene):

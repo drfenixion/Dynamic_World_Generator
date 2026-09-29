@@ -1,6 +1,11 @@
-from PyQt5.QtWidgets import QWizardPage, QHBoxLayout, QVBoxLayout, QComboBox, QListWidget, QPushButton, QLineEdit, QMessageBox, QGraphicsLineItem, QGraphicsEllipseItem, QWidget
-from PyQt5.QtCore import Qt, QEvent, QPointF, QLineF, QRectF
-from PyQt5.QtGui import QPen, QColor
+try:
+    from PySide.QtWidgets import QWizardPage, QHBoxLayout, QVBoxLayout, QComboBox, QListWidget, QPushButton, QLineEdit, QMessageBox, QGraphicsLineItem, QGraphicsEllipseItem, QWidget
+    from PySide.QtCore import Qt, QEvent, QPointF, QLineF, QRectF
+    from PySide.QtGui import QPen, QColor
+except:
+    from PySide6.QtWidgets import QWizardPage, QHBoxLayout, QVBoxLayout, QComboBox, QListWidget, QPushButton, QLineEdit, QMessageBox, QGraphicsLineItem, QGraphicsEllipseItem, QWidget
+    from PySide6.QtCore import Qt, QEvent, QPointF, QLineF, QRectF
+    from PySide6.QtGui import QPen, QColor
 from classes.zoomable_graphics_view import ZoomableGraphicsView
 import math
 

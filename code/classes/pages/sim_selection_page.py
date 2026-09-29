@@ -1,11 +1,16 @@
-from PyQt5.QtWidgets import QWizardPage, QLineEdit, QHBoxLayout, QWidget, QVBoxLayout, QLabel, QPushButton, QFrame
-from PyQt5.QtGui import QFont, QPixmap
-from PyQt5.QtCore import Qt, pyqtSignal
+try:
+    from PySide.QtWidgets import QWizardPage, QLineEdit, QHBoxLayout, QWidget, QVBoxLayout, QLabel, QPushButton, QFrame
+    from PySide.QtGui import QFont, QPixmap
+    from PySide.QtCore import Qt, Signal
+except:
+    from PySide6.QtWidgets import QWizardPage, QLineEdit, QHBoxLayout, QWidget, QVBoxLayout, QLabel, QPushButton, QFrame
+    from PySide6.QtGui import QFont, QPixmap
+    from PySide6.QtCore import Qt, Signal
 from utils.config import INTRO_IMAGES_DIR
 import os
 
 class SimSelectionPage(QWizardPage):
-    simulationSelected = pyqtSignal(str, str)
+    simulationSelected = Signal(str, str)
 
     def __init__(self):
         # Initialize wizard page with title and hidden fields
@@ -34,7 +39,10 @@ class SimSelectionPage(QWizardPage):
         harmonic_layout = QVBoxLayout()
         harmonic_label = QLabel("Gazebo Harmonic (Recommended)")
         harmonic_label.setAlignment(Qt.AlignCenter)
-        harmonic_label.setFont(QFont("Arial", 18, QFont.Bold | QFont.StyleItalic))
+        harmonic_font = QFont("Arial", 18)
+        harmonic_font.setBold(True)
+        harmonic_font.setItalic(True)
+        harmonic_label.setFont(harmonic_font)
         harmonic_label.setStyleSheet("color: red;")
         harmonic_image_label = QLabel()
         harmonic_image_path = os.path.join(INTRO_IMAGES_DIR, "harmonic.png")
@@ -69,7 +77,10 @@ class SimSelectionPage(QWizardPage):
         fortress_layout = QVBoxLayout()
         fortress_label = QLabel("Gazebo Fortress")
         fortress_label.setAlignment(Qt.AlignCenter)
-        fortress_label.setFont(QFont("Arial", 18, QFont.Bold | QFont.StyleItalic))
+        fortress_font = QFont("Arial", 18)
+        fortress_font.setBold(True)
+        fortress_font.setItalic(True)
+        fortress_label.setFont(fortress_font)
         fortress_label.setStyleSheet("color: red;")
         fortress_image_label = QLabel()
         fortress_image_path = os.path.join(INTRO_IMAGES_DIR, "fortress.jpeg")
@@ -109,7 +120,10 @@ class SimSelectionPage(QWizardPage):
         isaac_layout.addStretch(1)
         isaac_label = QLabel("Isaac Sim (Under Development)")
         isaac_label.setAlignment(Qt.AlignCenter)
-        isaac_label.setFont(QFont("Arial", 18, QFont.Bold | QFont.StyleItalic))
+        isaac_font = QFont("Arial", 18)
+        isaac_font.setBold(True)
+        isaac_font.setItalic(True)
+        isaac_label.setFont(isaac_font)
         isaac_label.setStyleSheet("color: red;")
         isaac_image_label = QLabel()
         isaac_image_path = os.path.join(INTRO_IMAGES_DIR, "isaacsim_450_gray.png")

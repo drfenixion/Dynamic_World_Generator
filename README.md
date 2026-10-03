@@ -2,7 +2,7 @@
 
 ![Dynamic World Generator Wizard Banner](https://github.com/user-attachments/assets/1b00aa22-24d7-40f1-8526-a3612bd7f503)
 
-**Dynamic World Generator Wizard** is a *PyQt5*-based graphical user interface (*GUI*) application designed to create and manage dynamic simulation worlds for *Gazebo* (*Harmonic* or *Fortress* versions). It allows users to build custom worlds with walls, static obstacles (boxes, cylinders, spheres), and dynamic obstacles with various motion paths (linear, elliptical, polygon). The tool generates *SDF* (*Simulation Description Format*) files for *Gazebo* and includes a motion script to animate dynamic obstacles. This app is ideal for robotics simulation, testing autonomous systems, or educational purposes in simulation environments.
+**Dynamic World Generator Wizard** is a *FreeCAD`s PySide*-based graphical user interface (*GUI*) application designed to create and manage dynamic simulation worlds for *Gazebo* (*Harmonic* or *Fortress* versions). It allows users to build custom worlds with walls, static obstacles (boxes, cylinders, spheres), and dynamic obstacles with various motion paths (linear, elliptical, polygon). The tool generates *SDF* (*Simulation Description Format*) files for *Gazebo* and includes a motion script to animate dynamic obstacles. This app is ideal for robotics simulation, testing autonomous systems, or educational purposes in simulation environments.
 
 The wizard guides users through a step-by-step process, ensuring an intuitive experience. It supports creating new worlds from empty templates, loading existing ones, and applying changes in real-time to *Gazebo*.
 
@@ -70,10 +70,6 @@ Dynamic_World_Generator/
 ### Prerequisites
 
 * **Python**: *3.10+* (tested on *3.10*).
-* **Dependencies**: Install required libraries:
-  ```bash
-  pip install PyQt5 lxml
-  ```
 * **Gazebo**: Install *Gazebo Harmonic* (recommended) or *Fortress*:
   * For *Harmonic* (*Ubuntu*/*Debian*), please visit:
     [https://gazebosim.org/docs/harmonic/install_ubuntu/](https://gazebosim.org/docs/harmonic/install_ubuntu/)
@@ -102,7 +98,7 @@ Dynamic_World_Generator/
 
 ### Troubleshooting Installation
 
-* **PyQt5 Errors**: Ensure a display server is running (e.g., on *WSL*, use `export DISPLAY=:0` or install an *X server* like *Xming*).
+* **PySide Errors**: Ensure a display server is running (e.g., on *WSL*, use `export DISPLAY=:0` or install an *X server* like *Xming*).
 * **Gazebo Not Found**: Verify installation:
   ```bash
   gz sim --version  # For Harmonic

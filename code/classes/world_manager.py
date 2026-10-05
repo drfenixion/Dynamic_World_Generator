@@ -77,16 +77,6 @@ class WorldManager:
         self.world_name = self.sdf_root.find("world").get("name")
         self.models = []
 
-        # Map RGB values to color names
-        rgb_to_color = {
-            (0, 0, 0): "Black",
-            (0.5, 0.5, 0.5): "Gray",
-            (1, 1, 1): "White",
-            (1, 0, 0): "Red",
-            (0, 0, 1): "Blue",
-            (0, 1, 0): "Green"
-        }
-
         # Parse models from SDF
         for model_elem in self.sdf_root.findall(".//model"):
             name = model_elem.get("name")
@@ -110,12 +100,15 @@ class WorldManager:
             pose = [float(x) for x in pose_str.split()]
             x, y, z, _, _, yaw = pose
 
-            # Parse color from material
+            # Parse color from material, preserving the actual RGB values
+            # (0.0..1.0) so arbitrary colors survive a save/load round-trip.
             material = model_elem.find(".//material/diffuse")
-            color_name = "Gray"
-            if material is not None:
-                rgb = tuple(float(x) for x in material.text.split()[:3])
-                color_name = rgb_to_color.get(rgb, "Gray")
+            color = (0.5, 0.5, 0.5)
+            if material is not None and material.text:
+                try:
+                    color = tuple(float(x) for x in material.text.split()[:3])
+                except ValueError:
+                    color = (0.5, 0.5, 0.5)
 
             geometry = model_elem.find(".//geometry")
             if geometry:
@@ -135,13 +128,13 @@ class WorldManager:
                             "end": (end_x, end_y),
                             "width": width,
                             "height": height,
-                            "color": color_name
+                            "color": color
                         }
                     else:
                         properties = {
                             "position": (x, y, z),
                             "size": size,
-                            "color": color_name
+                            "color": color
                         }
                 elif model_type == "cylinder":
                     radius = float(geometry.find("cylinder/radius").text)
@@ -149,14 +142,14 @@ class WorldManager:
                     properties = {
                         "position": (x, y, z),
                         "size": (radius, length),
-                        "color": color_name
+                        "color": color
                     }
                 elif model_type == "sphere":
                     radius = float(geometry.find("sphere/radius").text)
                     properties = {
                         "position": (x, y, z),
                         "size": (radius,),
-                        "color": color_name
+                        "color": color
                     }
 
             # Parse motion for dynamic obstacles

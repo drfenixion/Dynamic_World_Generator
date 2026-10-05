@@ -7,6 +7,8 @@ except:
     from PySide6.QtCore import Qt, QEvent, QPointF
     from PySide6.QtGui import QColor
 from classes.zoomable_graphics_view import ZoomableGraphicsView
+from utils.color_button import ColorButton
+from utils.color_utils import get_color
 
 class StaticObstaclesPage(QWizardPage):
     def __init__(self, scene):
@@ -50,9 +52,8 @@ class StaticObstaclesPage(QWizardPage):
         self.radius_input.setPlaceholderText("Radius (m) for Cylinder/Sphere")
         left_layout.addWidget(self.radius_input)
 
-        self.color_input = QLineEdit()
-        self.color_input.setPlaceholderText("Color (e.g., Red)")
-        left_layout.addWidget(self.color_input)
+        self.color_button = ColorButton()
+        left_layout.addWidget(self.color_button)
 
         self.apply_button = QPushButton("Apply and Preview")
         self.apply_button.clicked.connect(self.apply_changes)
@@ -154,7 +155,7 @@ class StaticObstaclesPage(QWizardPage):
                     R = float(self.radius_input.text() or 0.5)
                     size_m = (R,)
                     position_z = R
-                color = self.color_input.text() or "Gray"
+                color = get_color(self.color_button.get_rgb())
                 obstacle_name = self._unique_name(obstacle_type)
                 x_m = center.x() / 100
                 y_m = -center.y() / 100

@@ -11,6 +11,8 @@ import os
 import shutil
 from xml.etree import ElementTree as ET
 from utils.config import WORLDS_GAZEBO_DIR
+from utils.color_button import ColorButton
+from utils.color_utils import get_color
 
 class WallsDesignPage(QWizardPage):
     def __init__(self, scene):
@@ -65,9 +67,8 @@ class WallsDesignPage(QWizardPage):
         self.height_input.setPlaceholderText("Height (m)")
         left_layout.addWidget(self.height_input)
 
-        self.color_input = QLineEdit()
-        self.color_input.setPlaceholderText("Color (e.g., Black)")
-        left_layout.addWidget(self.color_input)
+        self.color_button = ColorButton()
+        left_layout.addWidget(self.color_button)
 
         self.apply_button = QPushButton("Apply and Preview")
         self.apply_button.clicked.connect(self.apply_changes)
@@ -141,7 +142,7 @@ class WallsDesignPage(QWizardPage):
                             "end": (end_point.x() / 100, -end_point.y() / 100),
                             "width": width,
                             "height": height,
-                            "color": self.color_input.text() or "Gray"
+                            "color": get_color(self.color_button.get_rgb())
                         },
                         "status": "new"
                     }

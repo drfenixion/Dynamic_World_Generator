@@ -102,6 +102,18 @@ class WallsDesignPage(QWizardPage):
         y = round(point.y() / grid_spacing) * grid_spacing
         return QPointF(x, y)
 
+    def _unique_name(self, prefix):
+        # Derive a name that is not used by any existing model. Using
+        # len(models) + 1 is unreliable because models can be removed or
+        # replaced after being loaded, which produces duplicate names.
+        existing = {m["name"] for m in self.world_manager.models}
+        index = 1
+        name = f"{prefix}_{index}"
+        while name in existing:
+            index += 1
+            name = f"{prefix}_{index}"
+        return name
+
     def eventFilter(self, obj, event):
         # Handle mouse clicks to add walls
         if obj == self.view and self.world_manager:
@@ -112,15 +124,23 @@ class WallsDesignPage(QWizardPage):
                 else:
                     clicked_point = self.view.mapToScene(event.pos())
                     end_point = self.snap_to_grid(clicked_point)
-                    wall_name = f"wall_{len(self.world_manager.models) + 1}"
+                    try:
+                        width = float(self.width_input.text() or 0.1)
+                        height = float(self.height_input.text() or 1.0)
+                    except ValueError:
+                        QMessageBox.warning(self, "Invalid Input",
+                                            "Please enter valid numeric values for width and height.")
+                        del self.start_point
+                        return True
+                    wall_name = self._unique_name("wall")
                     wall = {
                         "name": wall_name,
                         "type": "wall",
                         "properties": {
                             "start": (self.start_point.x() / 100, -self.start_point.y() / 100),
                             "end": (end_point.x() / 100, -end_point.y() / 100),
-                            "width": float(self.width_input.text() or 0.1),
-                            "height": float(self.height_input.text() or 1.0),
+                            "width": width,
+                            "height": height,
                             "color": self.color_input.text() or "Gray"
                         },
                         "status": "new"
@@ -195,6 +215,8 @@ class WallsDesignPage(QWizardPage):
 
     def refresh_worlds_list(self):
         self.world_list.clear()
+        if not self.world_manager:
+            return
         self.world_manager.refresh_worlds_list()
         for world in self.world_manager.worlds:
             self.world_list.addItem(world)

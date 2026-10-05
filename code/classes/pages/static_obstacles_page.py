@@ -120,6 +120,18 @@ class StaticObstaclesPage(QWizardPage):
         y = round(point.y() / grid_spacing) * grid_spacing
         return QPointF(x, y)
 
+    def _unique_name(self, prefix):
+        # Derive a name that is not used by any existing model. Using
+        # len(models) + 1 is unreliable because models can be removed or
+        # replaced after being loaded, which produces duplicate names.
+        existing = {m["name"] for m in self.world_manager.models}
+        index = 1
+        name = f"{prefix}_{index}"
+        while name in existing:
+            index += 1
+            name = f"{prefix}_{index}"
+        return name
+
     def eventFilter(self, obj, event):
         # Handle mouse clicks to add obstacles
         if obj == self.view and event.type() == QEvent.MouseButtonPress and event.button() == Qt.LeftButton and self.world_manager:
@@ -143,7 +155,7 @@ class StaticObstaclesPage(QWizardPage):
                     size_m = (R,)
                     position_z = R
                 color = self.color_input.text() or "Gray"
-                obstacle_name = f"{obstacle_type}_{len(self.world_manager.models) + 1}"
+                obstacle_name = self._unique_name(obstacle_type)
                 x_m = center.x() / 100
                 y_m = -center.y() / 100
                 obstacle = {

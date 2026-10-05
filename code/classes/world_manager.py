@@ -210,42 +210,47 @@ class WorldManager:
 
         for model in self.models[:]:
             if model["status"] == "updated":
-                request_str = f'name: "{model["name"]}", type: 2'
-                cmd = [prefix, "service", "-s", f"/world/{self.world_name}/remove",
-                    "--reqtype", f"{reqtype_prefix}.Entity",
-                    "--reptype", f"{reqtype_prefix}.Boolean",
-                    "--timeout", "3000",
-                    "--req", request_str]
-                try:
-                    result = subprocess.run(cmd, capture_output=True, text=True)
-                    if result.returncode != 0:
-                        continue
-                except:
-                    # let SDF generating without runtime Gazebo
-                    pass
+                # Remove the old entity from the running simulation (if any)
+                # before re-creating it with the new properties. Service calls
+                # are best-effort: Gazebo may be installed but not running.
+                if gazebo_runtime:
+                    request_str = f'name: "{model["name"]}", type: 2'
+                    cmd = [prefix, "service", "-s", f"/world/{self.world_name}/remove",
+                        "--reqtype", f"{reqtype_prefix}.Entity",
+                        "--reptype", f"{reqtype_prefix}.Boolean",
+                        "--timeout", "3000",
+                        "--req", request_str]
+                    try:
+                        subprocess.run(cmd, capture_output=True, text=True)
+                    except Exception:
+                        pass
                 for elem in self.sdf_root.findall(f".//model[@name='{model['name']}']"):
                     self.sdf_root.find("world").remove(elem)
                 self.save_sdf(self.world_path)
                 model["status"] = "new"
 
             if model["status"] == "new":
-                sdf_snippet_service = self.generate_model_sdf(model, for_service=True)
-                sdf_escaped = sdf_snippet_service.replace('"', '\\"')
-                sdf_compact = ' '.join(sdf_escaped.split())
-                request_str = f'sdf: "{sdf_compact}"'
-                cmd = [prefix, "service", "-s", f"/world/{self.world_name}/create",
-                    "--reqtype", f"{reqtype_prefix}.EntityFactory",
-                    "--reptype", f"{reqtype_prefix}.Boolean",
-                    "--timeout", "3000",
-                    "--req", request_str]
-                try:
-                    result = subprocess.run(cmd, capture_output=True, text=True)
-                    if result.returncode != 0 or "data: true" not in result.stdout:
-                        continue
-                    time.sleep(1)
-                except:
-                    # let SDF generating without runtime Gazebo
-                    pass
+                if gazebo_runtime:
+                    sdf_snippet_service = self.generate_model_sdf(model, for_service=True)
+                    sdf_escaped = sdf_snippet_service.replace('"', '\\"')
+                    sdf_compact = ' '.join(sdf_escaped.split())
+                    request_str = f'sdf: "{sdf_compact}"'
+                    cmd = [prefix, "service", "-s", f"/world/{self.world_name}/create",
+                        "--reqtype", f"{reqtype_prefix}.EntityFactory",
+                        "--reptype", f"{reqtype_prefix}.Boolean",
+                        "--timeout", "3000",
+                        "--req", request_str]
+                    try:
+                        result = subprocess.run(cmd, capture_output=True, text=True)
+                        if result.returncode == 0 and "data: true" in result.stdout:
+                            time.sleep(1)
+                    except Exception:
+                        # let SDF generating without runtime Gazebo
+                        pass
+                # Always persist the model to the SDF file, regardless of
+                # whether the simulation accepted the runtime service call.
+                # Otherwise changes would be silently lost when Gazebo is not
+                # running.
                 sdf_snippet_file = self.generate_model_sdf(model, for_service=False)
                 model_elem = ET.fromstring(sdf_snippet_file)
                 for elem in self.sdf_root.findall(f".//model[@name='{model['name']}']"):
@@ -253,19 +258,18 @@ class WorldManager:
                 self.sdf_root.find("world").append(model_elem)
                 self.save_sdf(self.world_path)
             elif model["status"] == "removed":
-                request_str = f'name: "{model["name"]}", type: 2'
-                cmd = [prefix, "service", "-s", f"/world/{self.world_name}/remove",
-                    "--reqtype", f"{reqtype_prefix}.Entity",
-                    "--reptype", f"{reqtype_prefix}.Boolean",
-                    "--timeout", "3000",
-                    "--req", request_str]
-                try:
-                    result = subprocess.run(cmd, capture_output=True, text=True)
-                    if result.returncode != 0:
-                        continue
-                except:
-                    # let SDF generating without runtime Gazebo
-                    pass                
+                if gazebo_runtime:
+                    request_str = f'name: "{model["name"]}", type: 2'
+                    cmd = [prefix, "service", "-s", f"/world/{self.world_name}/remove",
+                        "--reqtype", f"{reqtype_prefix}.Entity",
+                        "--reptype", f"{reqtype_prefix}.Boolean",
+                        "--timeout", "3000",
+                        "--req", request_str]
+                    try:
+                        subprocess.run(cmd, capture_output=True, text=True)
+                    except Exception:
+                        # let SDF generating without runtime Gazebo
+                        pass
                 for elem in self.sdf_root.findall(f".//model[@name='{model['name']}']"):
                     self.sdf_root.find("world").remove(elem)
                 self.save_sdf(self.world_path)
